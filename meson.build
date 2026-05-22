@@ -35,50 +35,17 @@ libkernel = chez_lib_dir / 'libkernel.a'
 libz      = chez_zlib_dir / 'libz.a'
 liblz4    = chez_lz4_dir / 'liblz4.a'
 
-# ---- Cascading build: Chez Scheme ----
-# custom_target runs configure + make if chezscheme hasn't been built yet.
-# Outputs are the static libraries we link against.
-# Meson tracks dependencies: if libkernel.a is missing or outdated,
-# the build step runs automatically before linking.
-
-chez_build = custom_target('chezscheme-build',
-  output: ['libkernel.a', 'libz.a', 'liblz4.a'],
-  command: [
-    'sh', '-c',
-    # Save the absolute build dir before cd
-    'BUILD_DIR="$(pwd)" && ' +
-    'echo "[meson] Building Chez Scheme..." && ' +
-    'cd "@SOURCE_DIR@/chezscheme" && ' +
-    'CFLAGS="-fPIC -O2 -D_REENTRANT -pthread" ' +
-    './configure --disable-x11 --disable-curses && ' +
-    'make -j$(nproc) && ' +
-    'echo "[meson] Chez Scheme build complete" && ' +
-    # Copy with absolute paths: source relative to chezscheme, dest to build dir
-    'echo "[meson] Copying libs to $BUILD_DIR..." && ' +
-    'cp "' + arch_dir + '/boot/' + arch_dir + '/libkernel.a" "$BUILD_DIR/@OUTPUT0@" && ' +
-    'cp "' + arch_dir + '/zlib/libz.a" "$BUILD_DIR/@OUTPUT1@" && ' +
-    'cp "' + arch_dir + '/lz4/lib/liblz4.a" "$BUILD_DIR/@OUTPUT2@" && ' +
-    'echo "[meson] Done copying"',
-  ],
-  build_by_default: true,
-)
-
-# Extract output paths as strings for link_args
-chez_kernel_path = meson.project_build_root() / 'libkernel.a'
-chez_zlib_path   = meson.project_build_root() / 'libz.a'
-chez_lz4_path    = meson.project_build_root() / 'liblz4.a'
-
 # Include directories (source tree, point to chezscheme submodule)
 chez_includes = [
   include_directories('chezscheme' / 'c'),
   include_directories('chezscheme' / 'boot' / arch_dir),
 ]
 
-# Link args: use the build-dir copies of chez libs, plus system libs
+# Link args: link directly against source-tree pre-built libs
 chez_link_args = [
-  chez_kernel_path,
-  chez_zlib_path,
-  chez_lz4_path,
+  libkernel,
+  libz,
+  liblz4,
   '-lm', '-ldl', '-lpthread',
 ]
 
@@ -90,7 +57,6 @@ libschemeplugin = shared_library('schemeplugin',
   'src/chez_adaptor.c',
   include_directories: chez_includes,
   link_args: chez_link_args,
-  link_depends: [chez_build],
   c_args: ['-DPLUGIN_SYSTEM'],
   install: true,
 )
@@ -101,7 +67,6 @@ libschemeplugin_dev = shared_library('schemeplugin-dev',
   'src/chez_adaptor.c',
   include_directories: chez_includes,
   link_args: chez_link_args,
-  link_depends: [chez_build],
   c_args: ['-DPLUGIN_SYSTEM', '-DPLUGIN_DEV'],
   install: true,
 )
