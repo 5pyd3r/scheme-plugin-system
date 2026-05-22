@@ -48,7 +48,7 @@ chez_build = custom_target('chezscheme-build',
     # Save the absolute build dir before cd
     'BUILD_DIR="$(pwd)" && ' +
     'echo "[meson] Building Chez Scheme..." && ' +
-    'cd "@SOURCE_ROOT@/chezscheme" && ' +
+    'cd "@SOURCE_DIR@/chezscheme" && ' +
     'CFLAGS="-fPIC -O2 -D_REENTRANT -pthread" ' +
     './configure --disable-x11 --disable-curses && ' +
     'make -j$(nproc) && ' +
