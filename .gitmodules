@@ -1,0 +1,3 @@
+[submodule "chezscheme"]
+	path = chezscheme
+	url = https://github.com/cisco/chezscheme.git
