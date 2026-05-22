@@ -1,0 +1,38 @@
+name: Build Scheme Plugin System
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq meson ninja-build build-essential
+
+      - name: Build Chez Scheme
+        run: |
+          cd chezscheme
+          CFLAGS="-fPIC -O2 -D_REENTRANT -pthread" ./configure --disable-x11 --disable-curses
+          make -j$(nproc)
+          cd ..
+
+      - name: Meson setup
+        run: meson setup builddir --backend=ninja
+
+      - name: Meson compile
+        run: meson compile -C builddir
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: scheme-plugin-artifacts
+          path: |
+            builddir/libschemeplugin.so
+            builddir/libschemeplugin-dev.so
+            builddir/scheme-plugin-host
