@@ -4,7 +4,8 @@
 /* Opaque handle for Scheme objects. Callers treat as void*. */
 typedef void* (*plugin_c_func)(void *arg);
 
-/* Initialize the plugin system. boot_path points to petite.boot. */
+/* Initialize the plugin system. boot_path points to directory containing
+ * petite.boot and scheme.boot. */
 int plugin_system_init(const char *boot_path);
 
 /* Register a C function callable from Scheme as `name`. */

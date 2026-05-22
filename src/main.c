@@ -4,14 +4,14 @@
 #include <stdlib.h>
 
 /* C function exposed to Scheme via Sforeign_symbol.
- * Scheme calls it as (host-multiply) → returns 42. */
-static ptr c_multiply(void) {
+ * Returns int directly — foreign-procedure declares integer-32 return type. */
+static int c_multiply(void) {
     printf("[C] host-multiply called, returning 42\n");
-    return Sinteger(42);
+    return 42;
 }
 
 int main(int argc, char **argv) {
-    const char *boot_path = "chezscheme/boot/tarm64le/petite.boot";
+    const char *boot_path = "/app/scheme-plugin-system/chezscheme/boot/tarm64le";
 
     printf("=== Scheme Plugin System Demo ===\n\n");
 
@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     /* Step 4: Call Scheme function get-result */
     printf("[C] Calling Scheme get-result...\n");
     ptr scheme_result = (ptr)plugin_call("get-result");
-    iptr val = Sinteger_value(scheme_result);
+    iptr val = Sfixnum_value(scheme_result);
     printf("[C] Scheme get-result returned: %ld\n", (long)val);
 
     /* Step 5: Cleanup */

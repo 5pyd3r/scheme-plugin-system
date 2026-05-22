@@ -9,9 +9,17 @@ int chez_init(const char *boot_path) {
 
     Sscheme_init(NULL);
 
-    /* Load the boot file to initialize the Scheme system.
-     * Sbuild_heap loads a compiled heap image (petite.boot, scheme.boot). */
-    Sbuild_heap(boot_path, NULL);
+    /* Register both petite.boot (interpreter) and scheme.boot (compiler).
+     * petite.boot provides the base Scheme runtime;
+     * scheme.boot provides the compiler needed for foreign-procedure.
+     * The boot_path is expected to be the directory containing both files. */
+    char petite_path[1024], scheme_path[1024];
+    snprintf(petite_path, sizeof(petite_path), "%s/petite.boot", boot_path);
+    snprintf(scheme_path, sizeof(scheme_path), "%s/scheme.boot", boot_path);
+
+    Sregister_boot_file(petite_path);
+    Sregister_boot_file(scheme_path);
+    Sbuild_heap(NULL, NULL);
 
     initialized = 1;
     return 0;

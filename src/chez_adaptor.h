@@ -1,7 +1,8 @@
 #ifndef CHEZ_ADAPTOR_H
 #define CHEZ_ADAPTOR_H
 
-/* Initialize Chez Scheme kernel with given boot file. */
+/* Initialize Chez Scheme kernel. boot_path is the directory containing
+ * petite.boot and scheme.boot. */
 int chez_init(const char *boot_path);
 
 /* Register a C function as a Scheme-callable foreign procedure. */
