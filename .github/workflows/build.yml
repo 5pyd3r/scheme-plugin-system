@@ -10,17 +10,10 @@ jobs:
         with:
           submodules: true
 
-      - name: Install build tools
+      - name: Install dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq meson ninja-build build-essential
-
-      - name: Build Chez Scheme
-        run: |
-          cd chezscheme
-          CFLAGS="-fPIC -O2 -D_REENTRANT -pthread" ./configure --disable-x11 --disable-curses
-          make -j$(nproc)
-          cd ..
+          sudo apt-get install -y -qq meson ninja-build build-essential uuid-dev
 
       - name: Meson setup
         run: meson setup builddir --backend=ninja
