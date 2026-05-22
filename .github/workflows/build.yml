@@ -33,7 +33,7 @@ jobs:
         run: meson setup builddir --backend=ninja -v
 
       - name: Meson compile
-        run: meson compile -C builddir -v
+        run: meson compile -C builddir -v 2>&1 || (echo "=== meson-log.txt ===" && cat builddir/meson-logs/meson-log.txt && exit 1)
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
