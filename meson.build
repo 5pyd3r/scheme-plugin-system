@@ -6,9 +6,9 @@ fs = import('fs')
 # 't' prefix = threaded (default), without = non-threaded.
 cpu_map = {
   'aarch64': ['tarm64le', 'arm64le'],
-  'x86_64':  ['a6le', 'ta6le'],
-  'x86':     ['i3le', 'ti3le'],
-  'arm':     ['arm32le', 'tarm32le'],
+  'x86_64':  ['ta6le', 'a6le'],
+  'x86':     ['ti3le', 'i3le'],
+  'arm':     ['tarm32le', 'arm32le'],
 }
 arch_dir = ''
 foreach d : cpu_map.get(host_machine.cpu_family(), [])
