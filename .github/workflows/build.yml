@@ -21,11 +21,19 @@ jobs:
           CFLAGS="-fPIC -O2 -D_REENTRANT -pthread" ./configure --disable-x11 --disable-curses
           make -j$(nproc)
 
+      - name: Debug build state
+        run: |
+          echo "=== PWD ===" && pwd
+          echo "=== ChezScheme arch dirs ===" && ls -d chezscheme/*/boot/*/libkernel.a 2>/dev/null || echo "NO LIBS FOUND"
+          echo "=== ChezScheme c dir ===" && ls chezscheme/c/ 2>/dev/null | head -5 || echo "NO c DIR"
+          echo "=== ChezScheme arch content ===" && ls chezscheme/*/ 2>/dev/null | head -20
+          echo "=== Submodules status ===" && git submodule status
+
       - name: Meson setup
-        run: meson setup builddir --backend=ninja
+        run: meson setup builddir --backend=ninja -v
 
       - name: Meson compile
-        run: meson compile -C builddir
+        run: meson compile -C builddir -v
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
